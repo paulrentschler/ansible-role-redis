@@ -1,0 +1,169 @@
+---
+# defaults for Redis related variables
+
+
+# Network connection settings
+redis_port: 6379
+redis_bind_interface: 127.0.0.1
+redis_unixsocket: ''
+redis_timeout: 300
+
+
+# Logging settings
+# This can be one of:
+#   debug (a lot of information, useful for development/testing)
+#   verbose (many rarely useful info, but not a mess like the debug level)
+#   notice (moderately verbose, what you want in production probably)
+#   warning (only very important / critical messages are logged)
+redis_loglevel: "notice"
+redis_logfile: /var/log/redis/redis-server.log
+
+
+# Number of databases provided
+redis_databases: 16
+
+
+# Save the DB on disk:
+#
+#   save <seconds> <changes>
+#
+#   Will save the DB if both the given number of seconds and the given
+#   number of write operations against the DB occurred.
+#
+#   In the defaults below the behaviour will be to save:
+#   after 900 sec (15 min) if at least 1 key changed
+#   after 300 sec (5 min) if at least 10 keys changed
+#   after 60 sec if at least 10000 keys changed
+#
+#   Note: you can disable saving completely by set to an empty set
+redis_save:
+  - 900 1
+  - 300 10
+  - 60 10000
+
+# Compress string objects using LZF when dumping .rdb databases
+redis_rdbcompression: "yes"
+
+# The filename where to dump the DB
+redis_dbfilename: dump.rdb
+
+# The working directory.
+#
+# The DB will be written inside this directory, with the filename specified
+# above using the 'redis_dbfilename' variable.
+#
+# The Append Only File will also be created inside this directory.
+#
+# Note that you must specify a directory here, not a file name.
+redis_dbdir: /var/lib/redis
+
+
+# Set a memory usage limit to the specified amount of bytes.
+# When the memory limit is reached Redis will try to remove keys
+# according to the eviction policy selected (see redis_maxmemory_policy).
+#
+# If Redis can't remove keys according to the policy, or if the policy is
+# set to 'noeviction', Redis will start to reply with errors to commands
+# that would use more memory, like SET, LPUSH, and so on, and will continue
+# to reply to read-only commands like GET.
+redis_maxmemory: 0
+
+# MAXMEMORY POLICY: how Redis will select what to remove when redis_maxmemory
+# is reached. You can select among five behaviors:
+#
+#   volatile-lru -> Evict using approximated LRU among the keys with an expire set.
+#   allkeys-lru -> Evict any key using approximated LRU.
+#   volatile-lfu -> Evict using approximated LFU among the keys with an expire set.
+#   allkeys-lfu -> Evict any key using approximated LFU.
+#   volatile-random -> Remove a random key among the ones with an expire set.
+#   allkeys-random -> Remove a random key, any key.
+#   volatile-ttl -> Remove the key with the nearest expire time (minor TTL)
+#   noeviction -> Don't evict anything, just return an error on write operations.
+#
+# LRU means Least Recently Used
+# LFU means Least Frequently Used
+#
+# Both LRU, LFU and volatile-ttl are implemented using approximated
+# randomized algorithms.
+#
+# Note: with any of the above policies, Redis will return an error on write
+#       operations, when there are no suitable keys for eviction.
+redis_maxmemory_policy: "noeviction"
+
+# LRU, LFU and minimal TTL algorithms are not precise algorithms but approximated
+# algorithms (in order to save memory), so you can tune it for speed or
+# accuracy. By default Redis will check five keys and pick the one that was
+# used less recently, you can change the sample size using the following
+# configuration directive.
+#
+# The default of 5 produces good enough results. 10 Approximates very closely
+# true LRU but costs more CPU. 3 is faster but not very accurate.
+redis_maxmemory_samples: 5
+
+
+# By default Redis asynchronously dumps the dataset on disk. This mode is
+# good enough in many applications, but an issue with the Redis process or
+# a power outage may result into a few minutes of writes lost (depending on
+# the configured save points).
+#
+# The Append Only File (AOF) is an alternative persistence mode that provides
+# much better durability. For instance using the default data fsync policy
+# (see later in the config file) Redis can lose just one second of writes in a
+# dramatic event like a server power outage, or a single write if something
+# wrong with the Redis process itself happens, but the operating system is
+# still running correctly.
+#
+# AOF and RDB persistence can be enabled at the same time without problems.
+# If the AOF is enabled on startup Redis will load the AOF, that is the file
+# with the better durability guarantees.
+#
+# Please check http://redis.io/topics/persistence for more information.
+redis_appendonly: "no"
+
+# The fsync() call tells the Operating System to actually write data to disk
+# instead of waiting for more data in the output buffer. Some OSes will really
+# flush data on disk, some other OSes will just try to do it ASAP.
+#
+# Redis supports three different modes:
+#
+#   no: don't fsync, just let the OS flush the data when it wants. Faster.
+#   always: fsync after every write to the append only log. Slow, Safest.
+#   everysec: fsync only one time every second. Compromise.
+#
+# The default is "everysec", as that's usually the right compromise between
+# speed and data safety.
+#
+# More details: http://antirez.com/post/redis-persistence-demystified.html
+redis_appendfsync: "everysec"
+
+
+# Add extra include files for local configuration/overrides.
+redis_includes: []
+
+
+# Require authentication to Redis with a password.
+#
+# Requires clients to issue AUTH <PASSWORD> before processing any other
+# commands. This might be useful in environments in which you do not trust
+# others with access to the host running redis-server.
+#
+# Specify the password below
+redis_requirepass: ""
+
+
+# Disable certain Redis commands for security reasons.
+redis_disabled_commands: []
+#  - FLUSHDB
+#  - FLUSHALL
+#  - KEYS
+#  - PEXPIRE
+#  - DEL
+#  - CONFIG
+#  - SHUTDOWN
+#  - BGREWRITEAOF
+#  - BGSAVE
+#  - SAVE
+#  - SPOP
+#  - SREM
+#  - RENAME
+#  - DEBUG

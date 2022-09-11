@@ -1,0 +1,11 @@
+---
+# Handlers for Redis
+
+
+- name: restart Redis
+  ansible.builtin.service:
+    name: "{{ redis_daemon }}"
+    state: restarted
+    enabled: true
+  become: yes
+

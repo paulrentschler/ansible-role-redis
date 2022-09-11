@@ -1,0 +1,83 @@
+---
+# Install and configure Redis server
+
+
+##
+# Variable setup
+##
+- name: include OS-specific variables
+  include_vars: "{{ ansible_os_family }}.yml"
+  tags:
+    - always
+
+- name: define redis_package
+  ansible.builtin.set_fact:
+    redis_package: "{{ __redis_package }}"
+  when: redis_package is not defined
+  tags:
+    - redis_install
+
+
+
+##
+# Install Redis
+##
+- name: ensure configuration dir exists
+  ansible.builtin.file:
+    path: "{{ redis_conf_path|dirname }}"
+    owner: "root"
+    group: "root"
+    mode: 0755
+    state: directory
+  become: yes
+  tags:
+    - redis_config
+    - redis_install
+
+- name: install Redis (Debian)
+  ansible.builtin.apt:
+    name: "{{ redis_package }}"
+    state: present
+  when: ansible_os_family == 'Debian'
+  become: yes
+  tags:
+    - redis_install
+
+- name: install Redis (RedHat)
+  ansible.builtin.package:
+    name: "{{ redis_package }}"
+    state: present
+    enablerepo: "epel"
+  when: ansible_os_family == 'RedHat'
+  become: yes
+  tags:
+    - redis_install
+
+
+
+##
+# Configure Redis
+##
+- name: configure Redis
+  ansible.builtin.template:
+    src: redis.conf.j2
+    dest: "{{ redis_conf_path }}"
+    owner: "root"
+    group: "root"
+    mode: "{{ redis_conf_mode }}"
+  become: yes
+  notify: restart redis
+  tags:
+    - redis_config
+    - redis_install
+
+
+- name: start redis service
+  ansible.builtin.service:
+    name: "{{ redis_daemon }}"
+    enabled: yes
+    state: "started"
+  become: yes
+  tags:
+    - redis_install
+
