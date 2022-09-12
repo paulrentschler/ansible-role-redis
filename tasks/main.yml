@@ -66,7 +66,7 @@
     group: "root"
     mode: "{{ redis_conf_mode }}"
   become: yes
-  notify: restart redis
+  notify: restart Redis
   tags:
     - redis_config
     - redis_install
