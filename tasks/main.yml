@@ -63,7 +63,7 @@
     src: redis.conf.j2
     dest: "{{ redis_conf_path }}"
     owner: "root"
-    group: "root"
+    group: "{{ redis_group }}"
     mode: "{{ redis_conf_mode }}"
   become: yes
   notify: restart Redis
