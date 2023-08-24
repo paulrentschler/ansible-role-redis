@@ -81,3 +81,30 @@
   tags:
     - redis_install
 
+
+
+##
+# Firewall rules
+##
+- name: combine the hosts and groups
+  set_fact:
+    redis_firewall_allow_hosts:
+      - "{{ redis_firewall_allow_hosts }}"
+      - "[{% for _group in redis_firewall_allow_groups %}{{ groups[_group] }}, {% endfor %}]"
+  tags:
+    - firewall_config
+    - redis_firewall
+
+- name: allow access to specific hosts
+  community.general.ufw:
+    rule: allow
+    from_ip: "{{ hostvars[item].ansible_host }}"
+    proto: tcp
+    to_port: "{{ redis_port }}"
+  loop: "{{ redis_firewall_allow_hosts|flatten }}"
+  loop_control:
+    label: "{{ item }}"
+  become: yes
+  tags:
+    - firewall_config
+    - redis_firewall

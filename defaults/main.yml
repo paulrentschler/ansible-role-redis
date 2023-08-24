@@ -9,6 +9,21 @@ redis_unixsocket: ''
 redis_timeout: 300
 
 
+# Firewall settings
+#
+#   If the host supports the Ubuntu FireWall (UFW), these settings can be used
+#   to allow access to the Redis server through the firewall.
+#
+# Set to "yes" to indicate the firewall should be configured
+redis_firewall: no
+
+# Specify a list of Ansible hosts that should be allowed access
+redis_firewall_allow_hosts: []
+
+# Specify a list of Ansible groups that should be allowed access
+redis_firewall_allow_groups: []
+
+
 # Logging settings
 # This can be one of:
 #   debug (a lot of information, useful for development/testing)
