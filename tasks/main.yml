@@ -94,6 +94,7 @@
   tags:
     - firewall_config
     - redis_firewall
+    - redis_install
 
 - name: allow access to specific hosts
   community.general.ufw:
@@ -108,3 +109,4 @@
   tags:
     - firewall_config
     - redis_firewall
+    - redis_install
